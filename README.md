@@ -1,8 +1,12 @@
+<p align="center">
+  <img src="./doc/elsa-logo.png" alt="Elsa Logo">
+</p>
+
 ## Elsa Workflows
 
 [![Nuget](https://img.shields.io/nuget/v/Elsa)](https://www.nuget.org/packages/Elsa/)
-[![MyGet (with prereleases)](https://img.shields.io/myget/elsa/vpre/Elsa.Core.svg?label=myget)](https://www.myget.org/gallery/elsa)
-[![Build status](https://ci.appveyor.com/api/projects/status/rqg10opfpy78yiga/branch/develop?svg=true)](https://ci.appveyor.com/project/sfmskywalker/elsa/branch/develop)
+[![MyGet (with prereleases)](https://img.shields.io/myget/elsa-2/vpre/Elsa)](https://www.myget.org/gallery/elsa-2)
+[![Build status](https://ci.appveyor.com/api/projects/status/l07xwnl34qtm6c27?svg=true)](https://ci.appveyor.com/project/sfmskywalker/elsa-1)
 [![Gitter](https://badges.gitter.im/elsa-workflows/community.svg)](https://gitter.im/elsa-workflows/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Stack Overflow questions](https://img.shields.io/badge/stackoverflow-elsa_workflows-orange.svg)]( http://stackoverflow.com/questions/tagged/elsa-workflows )
 ![Docker Pulls](https://img.shields.io/docker/pulls/elsaworkflows/elsa-dashboard?label=elsa%20dashboard%3Adocker%20pulls)
@@ -37,15 +41,14 @@ Version 1.0
 
 Version 2.0
 
-- [ ] Service Bus Messaging
+- [x] Service Bus Messaging
 - [ ] Generic Command & Event Activities
-- [ ] Workflow Host REST API
+- [x] Workflow Host REST API
 - [ ] Workflow Host gRPC API
-- [ ] Workflow Server
-- [ ] Activity Harvesting
-- [ ] Distributed Hosting Support (support for multi-node environments)
+- [x] Workflow Server
+- [x] Activity Harvesting
+- [x] Distributed Hosting Support (support for multi-node environments)
 - [ ] Localization Support
-- [ ] More activities
 - [ ] Workflow Designer UI improvements
 - [ ] Activity Editor UI improvements
 
@@ -187,7 +190,16 @@ TODO: describe all the steps to add packages and register services.
 In order to build & run Elsa on your local machine, follow these steps:
 
 1. Clone the repository.
-2. Run NPM install on all folders containing packages.json (or run `node npm-install.js` - a script in the root that recursively installs the Node packages)
-3. Execute gulp build from the directory src\dashboard\Elsa.Dashboard\Theme\argon-dashboard
-4. Open a shell and navigate to `src/samples/Sample16` and run `dotnet run`.
-5. Navigate to https://localhost:8632/elsa/home
+2. Run NPM install on `src\dashboard\Elsa.Dashboard\Theme\argon-dashboard`
+3. Execute `gulp build` from the directory `src\dashboard\Elsa.Dashboard\Theme\argon-dashboard`
+4. Open a shell and navigate to `src\dashboard\Elsa.Dashboard.Web` and run `dotnet run`.
+5. Navigate to http://localhost:22174/elsa/home
+
+# Code of Conduct
+
+This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
+For more information see the [.NET Foundation Code of Conduct](https://dotnetfoundation.org/code-of-conduct). 
+
+### .NET Foundation
+
+This project is supported by the [.NET Foundation](https://dotnetfoundation.org).

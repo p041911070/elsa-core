@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using Elsa.Attributes;
 using Elsa.Expressions;
@@ -10,7 +10,7 @@ using Elsa.Services.Models;
 
 namespace Elsa.Activities.ControlFlow.Activities
 {
-    [ActivityDefinition(Category = "Control Flow", Description = "Execute while a given condition is true.", Icon = "far fa-circle")]
+    [ActivityDefinition(Category = "Control Flow", Description = "Execute while a given condition is true.", Icon = "far fa-circle", Outcomes = "[ 'Done', 'Iterate' ]")]
     public class While : Activity
     {
         private readonly IWorkflowExpressionEvaluator expressionEvaluator;
@@ -39,15 +39,10 @@ namespace Elsa.Activities.ControlFlow.Activities
         {
             var loop = await expressionEvaluator.EvaluateAsync(ConditionExpression, context, cancellationToken);
 
-            if(HasStarted)
-                context.EndScope();
-            
             if (loop)
             {
-                if (!HasStarted) 
-                    HasStarted = true;
-
-                context.BeginScope();
+                HasStarted = true;
+                
                 return Outcome(OutcomeNames.Iterate);
             }
 

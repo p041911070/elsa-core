@@ -1,8 +1,9 @@
-﻿using Elsa.Activities.Email.Extensions;
+using Elsa.Activities.Email.Extensions;
 using Elsa.Activities.Http.Extensions;
+using Elsa.Activities.MassTransit;
 using Elsa.Activities.MassTransit.Extensions;
+using Elsa.Activities.MassTransit.Options;
 using Elsa.Activities.Timers.Extensions;
-using Elsa.Runtime;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,16 +25,22 @@ namespace Sample08
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var massTransitBuilder = new DefaultRabbitMqMassTransitBuilder
+            {
+                MessageTypes = new[]
+                {
+                    typeof(CreateOrder),
+                    typeof(OrderShipped)
+                },
+                Options = o => o.Bind(Configuration.GetSection("MassTransit:RabbitMq"))
+            };
+
             services
                 .AddElsa()
-                .AddTaskExecutingServer()
                 .AddHttpActivities()
                 .AddTimerActivities(options => options.Configure(x => x.SweepInterval = Duration.FromSeconds(10)))
                 .AddEmailActivities(options => options.Bind(Configuration.GetSection("Smtp")))
-                .AddRabbitMqActivities(
-                    options => options.Bind(Configuration.GetSection("MassTransit:RabbitMq")),
-                    typeof(CreateOrder),
-                    typeof(OrderShipped))
+                .AddMassTransitActivities(massTransitBuilder)
                 .AddWorkflow<CreateOrderWorkflow>()
                 .AddWorkflow<HandleOrderWorkflow>();
         }

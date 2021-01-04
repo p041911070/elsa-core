@@ -5,14 +5,13 @@ using System.Collections.Generic;
 
 namespace Elsa.Persistence.DocumentDb.Documents
 {
-    public class WorkflowInstanceDocument
+    public class WorkflowInstanceDocument : DocumentBase
     {
-        [JsonProperty(PropertyName = "id")] public string Id { get; set; }
-
         [JsonProperty(PropertyName = "definitionId")]
         public string DefinitionId { get; set; }
 
-        [JsonProperty(PropertyName = "type")] public string Type { get; } = nameof(WorkflowInstanceDocument);
+        [JsonProperty(PropertyName = "type")] 
+        public string Type { get; } = nameof(WorkflowInstanceDocument);
 
         [JsonProperty(PropertyName = "version")]
         public int Version { get; set; }
@@ -42,10 +41,11 @@ namespace Elsa.Persistence.DocumentDb.Documents
         public IDictionary<string, ActivityInstance> Activities { get; set; } =
             new Dictionary<string, ActivityInstance>();
 
-        [JsonProperty(PropertyName = "scopes")]
-        public Stack<WorkflowExecutionScope> Scopes { get; set; }
+        [JsonProperty(PropertyName = "scope")]
+        public WorkflowExecutionScope Scope { get; set; }
 
-        [JsonProperty(PropertyName = "input")] public Variables Input { get; set; }
+        [JsonProperty(PropertyName = "input")] 
+        public Variables Input { get; set; }
 
         [JsonProperty(PropertyName = "blockingActivities")]
         public HashSet<BlockingActivity> BlockingActivities { get; set; }
@@ -53,6 +53,10 @@ namespace Elsa.Persistence.DocumentDb.Documents
         [JsonProperty(PropertyName = "executionLog")]
         public ICollection<LogEntry> ExecutionLog { get; set; }
 
-        [JsonProperty(PropertyName = "fault")] public WorkflowFault Fault { get; set; }
+        [JsonProperty(PropertyName = "fault")] 
+        public WorkflowFault Fault { get; set; }
+
+        [JsonProperty(PropertyName = "tenantId")]
+        public string TenantId { get; set; }
     }
 }

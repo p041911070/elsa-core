@@ -3,7 +3,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using Elsa.Expressions;
 using Elsa.Scripting.JavaScript.Converters;
 using Elsa.Scripting.JavaScript.Extensions;
@@ -25,7 +24,6 @@ namespace Elsa.Scripting.JavaScript.Services
     public class JavaScriptExpressionEvaluator : IExpressionEvaluator
     {
         private readonly IMediator mediator;
-        private readonly IMapper mapper;
         private readonly IOptions<ScriptOptions> options;
         private readonly JsonSerializerSettings serializerSettings;
         public const string SyntaxName = "JavaScript";
@@ -38,7 +36,6 @@ namespace Elsa.Scripting.JavaScript.Services
         public JavaScriptExpressionEvaluator(IMediator mediator, IMapper mapper, IOptions<ScriptOptions> options)
         {
             this.mediator = mediator;
-            this.mapper = mapper;
             this.options = options;
 
             serializerSettings = new JsonSerializerSettings().ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
@@ -76,13 +73,15 @@ namespace Elsa.Scripting.JavaScript.Services
             if (value.IsNull())
                 return default;
 
-            if (targetType == typeof(bool) && value.IsBoolean())
+            var targetIsObject = targetType == typeof(object);
+
+            if (value.IsBoolean())
                 return value.AsBoolean();
 
-            if (targetType == typeof(DateTime) && value.IsDate())
+            if ((targetIsObject || targetType == typeof(DateTime)) && value.IsDate())
                 return value.AsDate().ToDateTime();
 
-            if (targetType.IsNumeric() && value.IsNumber())
+            if ((targetIsObject || targetType.IsNumeric()) && value.IsNumber())
                 return Convert.ChangeType(value.AsNumber(), targetType);
 
             if (targetType == typeof(string))
@@ -101,7 +100,7 @@ namespace Elsa.Scripting.JavaScript.Services
             if (value.IsArray())
             {
                 var arrayInstance = value.AsArray();
-                var elementType = targetType.GetElementType() ?? targetType.GenericTypeArguments.First();
+                var elementType = targetType?.GetElementType() ?? targetType?.GenericTypeArguments?.First() ?? typeof(object);
 
                 if (elementType == typeof(byte))
                 {
@@ -110,7 +109,7 @@ namespace Elsa.Scripting.JavaScript.Services
                     for (uint i = 0; i < arrayInstance.Length; i++)
                     {
                         var jsValue = arrayInstance[i];
-                        bytes[i] = (byte) jsValue.AsNumber();
+                        bytes[i] = (byte)jsValue.AsNumber();
                     }
 
                     return bytes;

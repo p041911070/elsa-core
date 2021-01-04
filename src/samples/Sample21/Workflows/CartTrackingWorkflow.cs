@@ -5,6 +5,7 @@ using Elsa.Activities.MassTransit.Activities;
 using Elsa.Scripting.JavaScript;
 using Elsa.Services;
 using Elsa.Services.Models;
+using Microsoft.Extensions.Options;
 using NodaTime;
 using Sample21.Messages;
 
@@ -12,6 +13,13 @@ namespace Sample21.Workflows
 {
     public class CartTrackingWorkflow : IWorkflow
     {
+        private readonly RabbitMqSchedulerOptions options;
+
+        public CartTrackingWorkflow(IOptions<RabbitMqSchedulerOptions> options)
+        {
+            this.options = options.Value;
+        }
+
         public void Build(IWorkflowBuilder builder)
         {
             builder.StartWith<ReceiveMassTransitMessage>(activity => activity.MessageType = typeof(CartCreated))
@@ -34,7 +42,7 @@ namespace Sample21.Workflows
                                 activity =>
                                 {
                                     activity.MessageType = typeof(CartExpiredEvent);
-                                    activity.EndpointAddress = new Uri("rabbitmq://localhost/shopping_cart_state");
+                                    activity.EndpointAddress = new Uri($"{options.Host}/shopping_cart_state");
                                     activity.ScheduledTime = new JavaScriptExpression<DateTime>("plus(LastUpdateTimestamp, durationFromSeconds(10)).ToDateTimeUtc()");
                                     activity.Message = new JavaScriptExpression<CartExpiredEvent>("return { correlationId: correlationId(), cartId: correlationId() }");
                                 }).WithName("ScheduleExpire")
@@ -62,7 +70,7 @@ namespace Sample21.Workflows
                             .Then<SendMassTransitMessage>(activity =>
                             {
                                 activity.Message = new JavaScriptExpression<CartRemovedEvent>("return { cartId: correlationId() };");
-                                activity.EndpointAddress = new Uri("rabbitmq://localhost/shopping_cart_service");
+                                activity.EndpointAddress = new Uri($"{options.Host}/shopping_cart_service");
                                 activity.MessageType = typeof(CartRemovedEvent);
                             })
                             .Then("Join");
